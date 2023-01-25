@@ -1,0 +1,43 @@
+#include <OneWire.h>
+#include <DallasTemperature.h>
+#include "HD44780.hpp"
+#include "libADC.hpp"
+
+#define ONE_WIRE_BUS 2 
+#define TEMP_PRECISION 9 
+
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&oneWire);
+
+void setup() {
+LCD_Initalize(); 
+ADC_Init();
+sensors.begin();
+sensors.setResolution(TEMP_PRECISION);
+}
+
+void loop() {
+sensors.requestTemperatures(); 
+float temp = sensors.getTempCByIndex(0);
+LCD_Clear(); 
+if (temp < 15) {
+LCD_GoTo(0,0); 
+LCD_WriteText("Cold "); 
+char buffer[10];
+dtostrf(temp, 4, 2, buffer);
+LCD_WriteText(buffer); 
+} else if (temp >= 15 && temp <= 25) {
+LCD_GoTo(0,0); 
+LCD_WriteText("Temp "); 
+char buffer[10];
+dtostrf(temp, 4, 2, buffer);
+LCD_WriteText(buffer); 
+} else {
+LCD_GoTo(0,0); 
+LCD_WriteText("Hot "); 
+char buffer[10];
+dtostrf(temp, 4, 2, buffer);
+LCD_WriteText(buffer); 
+}
+delay(1000); 
+}
